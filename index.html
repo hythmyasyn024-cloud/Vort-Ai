@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Vort Admin — One File</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+:root{--bg:#020617;--panel:rgba(15,23,42,.92);--panel2:rgba(30,41,59,.7);--text:#f8fafc;--muted:#94a3b8;--border:rgba(148,163,184,.18);--blue:#38bdf8;--purple:#8b5cf6;--green:#10b981;--red:#ef4444;--orange:#f59e0b}
+body{min-height:100vh;background:radial-gradient(circle at 15% 10%,rgba(139,92,246,.22),transparent 38%),radial-gradient(circle at 90% 80%,rgba(20,184,166,.16),transparent 42%),var(--bg);color:var(--text);padding:14px;overflow-x:hidden}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{width:100%;max-width:1100px;margin:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 4px 18px}.brand{font-size:1.65rem;font-weight:950;background:linear-gradient(135deg,#c084fc,#38bdf8,#2dd4bf);-webkit-background-clip:text;color:transparent}.owner{font-size:.75rem;color:var(--muted)}
+.btn{border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:9px 13px;border-radius:14px}.btn.primary{border:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);font-weight:800}.btn.danger{color:#fecaca;border-color:rgba(239,68,68,.35)}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}.nav button{min-height:54px;border:1px solid var(--border);border-radius:16px;background:rgba(15,23,42,.78);color:var(--muted);font-weight:800}.nav button.active{color:white;background:linear-gradient(135deg,rgba(99,102,241,.85),rgba(56,189,248,.5));border-color:rgba(125,211,252,.4)}
+.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:16px}.stat .ico{font-size:1.35rem}.stat b{display:block;font-size:1.55rem;margin-top:7px}.stat span{font-size:.75rem;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:22px;padding:16px;margin-top:12px}.card h2{font-size:1rem;margin-bottom:12px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.input,.select,.textarea{width:100%;background:rgba(2,6,23,.55);border:1px solid var(--border);border-radius:14px;color:var(--text);padding:11px 13px;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:rgba(56,189,248,.65)}.textarea{min-height:110px;resize:vertical}.toolbar .input{flex:1;min-width:180px}.toolbar .select{width:auto;min-width:160px}
+.complaint{border:1px solid var(--border);background:rgba(2,6,23,.42);border-radius:18px;padding:14px;margin-top:10px}.complaint-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.complaint-title{font-weight:900}.meta{font-size:.72rem;color:var(--muted);margin-top:4px}.desc{color:#dbeafe;font-size:.84rem;line-height:1.7;margin-top:10px;white-space:pre-wrap}.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;font-size:.7rem;font-weight:800}.new{background:rgba(239,68,68,.13);color:#fca5a5}.review{background:rgba(245,158,11,.13);color:#fcd34d}.done{background:rgba(16,185,129,.13);color:#6ee7b7}.closed{background:rgba(148,163,184,.13);color:#cbd5e1}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.actions .btn{font-size:.75rem}
+.user{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border)}.user:last-child{border-bottom:0}.avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(99,102,241,.18)}.user-main{display:flex;align-items:center;gap:10px}.small{font-size:.72rem;color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:30px 10px}.notice{padding:11px 13px;border-radius:14px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.18);color:#bae6fd;font-size:.78rem;line-height:1.6}
+.overlay{display:none;position:fixed;inset:0;background:rgba(2,6,23,.78);backdrop-filter:blur(10px);z-index:50;padding:16px;align-items:center;justify-content:center}.overlay.active{display:flex}.modal{width:100%;max-width:520px;max-height:90vh;overflow:auto;background:#0b1224;border:1px solid var(--border);border-radius:24px;padding:18px}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.close{border:1px solid var(--border);background:transparent;color:white;border-radius:12px;padding:8px 11px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(100px);opacity:0;background:#111827;color:white;border:1px solid var(--border);padding:11px 16px;border-radius:14px;z-index:100;transition:.25s}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.nav{grid-template-columns:repeat(3,1fr)}.nav button:nth-child(4),.nav button:nth-child(5){grid-column:span 1}.topbar{align-items:flex-start}.brand{font-size:1.35rem}}
+@media(max-width:430px){body{padding:10px}.nav{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,1fr)}.stat{padding:13px}.stat b{font-size:1.3rem}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><div><div class="brand">Vort Admin</div><div class="owner">لوحة إدارة ومتابعة Vort AI</div></div><button class="btn danger" onclick="clearLocalDemo()">مسح بيانات التجربة</button></header>
+<nav class="nav" id="nav">
+<button class="active" data-page="overview">📊 الرئيسية</button><button data-page="complaints">📝 الشكاوى</button><button data-page="users">👥 المستخدمون</button><button data-page="broadcast">📢 الإشعارات</button><button data-page="tools">🛠️ أدوات الإدارة</button>
+</nav>
+<main>
+<section class="page active" id="overview">
+<div class="grid">
+<div class="stat"><span class="ico">📝</span><b id="statTotal">0</b><span>إجمالي الشكاوى</span></div>
+<div class="stat"><span class="ico">🔴</span><b id="statNew">0</b><span>شكاوى جديدة</span></div>
+<div class="stat"><span class="ico">🟡</span><b id="statReview">0</b><span>قيد المراجعة</span></div>
+<div class="stat"><span class="ico">🟢</span><b id="statDone">0</b><span>تم الحل</span></div>
+</div>
+<div class="card"><h2>⚡ آخر الشكاوى</h2><div id="latestComplaints"></div></div>
+<div class="card"><h2>ℹ️ ملاحظة مهمة</h2><div class="notice">هذه النسخة تعمل كواجهة إدارة محلية للتجربة. لكي تصل شكاوى المستخدمين من أجهزتهم المختلفة إلى هذه اللوحة، نحتاج Backend وقاعدة بيانات مشتركة. لا تعتبر localStorage نظامًا حقيقيًا متعدد المستخدمين.</div></div>
+</section>
+<section class="page" id="complaints">
+<div class="card"><h2>📝 مركز الشكاوى</h2><div class="toolbar"><input class="input" id="searchComplaint" placeholder="ابحث بالعنوان أو المستخدم أو التفاصيل..."><select class="select" id="statusFilter"><option value="all">كل الحالات</option><option value="new">جديدة</option><option value="review">قيد المراجعة</option><option value="done">تم الحل</option><option value="closed">مغلقة</option></select><select class="select" id="typeFilter"><option value="all">كل الأنواع</option><option>مشكلة تقنية</option><option>مشكلة في الردود</option><option>مشكلة في الصوت / Live Mode</option><option>مشكلة في الصور</option><option>اقتراح تطوير</option><option>أخرى</option></select></div><div id="complaintsList"></div></div>
+</section>
+<section class="page" id="users">
+<div class="card"><h2>👥 المستخدمون</h2><div class="toolbar"><input class="input" id="searchUser" placeholder="ابحث عن مستخدم..."><button class="btn primary" onclick="refreshUsers()">تحديث</button></div><div id="usersList"></div></div>
+</section>
+<section class="page" id="broadcast">
+<div class="card"><h2>📢 إشعار عام</h2><p class="small" style="margin-bottom:10px">هذه الواجهة تحفظ آخر إشعار محليًا فقط في النسخة التجريبية.</p><textarea class="textarea" id="broadcastText" placeholder="اكتب الرسالة التي تريد إرسالها..."></textarea><div class="actions"><button class="btn primary" onclick="sendBroadcast()">إرسال الإشعار 🚀</button><button class="btn" onclick="document.getElementById('broadcastText').value=''">مسح</button></div></div>
+<div class="card"><h2>📌 آخر إشعار محفوظ</h2><div id="lastBroadcast" class="notice">لا يوجد إشعار.</div></div>
+</section>
+<section class="page" id="tools">
+<div class="card"><h2>🧰 أدوات الإدارة</h2><div class="actions"><button class="btn" onclick="exportData()">تصدير بيانات التجربة JSON</button><button class="btn" onclick="document.getElementById('importFile').click()">استيراد بيانات JSON</button><input type="file" id="importFile" accept="application/json" hidden></div></div>
+<div class="card"><h2>🔐 أمان</h2><div class="notice">لا تضع مفاتيح Gemini السرية داخل كود لوحة الإدارة المنشور للعامة. لوحة المالك الحقيقية يجب أن تستخدم تسجيل دخول على الخادم وصلاحيات Backend.</div></div>
+</section>
+</main>
+</div>
+<div class="overlay" id="detailsOverlay"><div class="modal"><div class="modal-head"><h2 id="modalTitle">تفاصيل الشكوى</h2><button class="close" onclick="closeDetails()">✕</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const KEYS={complaints:'vort_complaints',users:'vort_all_users',vip:'vort_vip_users',broadcast:'vort_broadcast_msg'};
+let complaints=read(KEYS.complaints,[]), users=read(KEYS.users,['Yassin Haitham']), vip=read(KEYS.vip,[]);
+function read(k,f){try{const x=localStorage.getItem(k);return x?JSON.parse(x):f}catch{return f}}
+function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function statusText(s){return ({new:'جديدة',review:'قيد المراجعة',done:'تم الحل',closed:'مغلقة'})[s]||'جديدة'}
+function statusClass(s){return s||'new'}
+function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>el.classList.remove('show'),2200)}
+function normalizeComplaint(c,i){return {...c,id:c.id||('VORT-'+Date.now()+'-'+i),status:c.status||'new',createdAt:c.createdAt||new Date().toISOString(),title:c.title||'',type:c.type||'أخرى',details:c.details||'',contact:c.contact||'',user:c.user||c.username||'غير معروف'}}
+complaints=complaints.map(normalizeComplaint);save(KEYS.complaints,complaints);
+function renderStats(){const count=s=>complaints.filter(c=>c.status===s).length;document.getElementById('statTotal').textContent=complaints.length;document.getElementById('statNew').textContent=count('new');document.getElementById('statReview').textContent=count('review');document.getElementById('statDone').textContent=count('done')}
+function complaintCard(c){return `<div class="complaint"><div class="complaint-head"><div><div class="complaint-title">${esc(c.title||c.type)}</div><div class="meta">${esc(c.type)} • ${esc(c.user)} • ${new Date(c.createdAt).toLocaleString('ar-EG')}</div></div><span class="badge ${statusClass(c.status)}">${statusText(c.status)}</span></div><div class="desc">${esc(c.details).slice(0,420)}${c.details.length>420?'…':''}</div><div class="actions"><button class="btn" onclick="viewComplaint('${esc(c.id)}')">فتح التفاصيل</button><button class="btn" onclick="setStatus('${esc(c.id)}','review')">قيد المراجعة</button><button class="btn" onclick="setStatus('${esc(c.id)}','done')">تم الحل</button><button class="btn danger" onclick="setStatus('${esc(c.id)}','closed')">إغلاق</button></div></div>`}
+function renderLatest(){const el=document.getElementById('latestComplaints');const list=[...complaints].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);el.innerHTML=list.length?list.map(complaintCard).join(''):'<div class="empty">لا توجد شكاوى حتى الآن.</div>'}
+function renderComplaints(){const q=document.getElementById('searchComplaint').value.trim().toLowerCase(),st=document.getElementById('statusFilter').value,ty=document.getElementById('typeFilter').value;const list=complaints.filter(c=>(st==='all'||c.status===st)&&(ty==='all'||c.type===ty)&&[c.title,c.type,c.details,c.user,c.contact].join(' ').toLowerCase().includes(q)).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));document.getElementById('complaintsList').innerHTML=list.length?list.map(complaintCard).join(''):'<div class="empty">لا توجد نتائج.</div>'}
+function renderAll(){renderStats();renderLatest();renderComplaints();refreshUsers();renderBroadcast()}
+function setStatus(id,status){const c=complaints.find(x=>x.id===id);if(!c)return;c.status=status;save(KEYS.complaints,complaints);renderAll();toast('تم تحديث حالة الشكوى')}
+function viewComplaint(id){const c=complaints.find(x=>x.id===id);if(!c)return;document.getElementById('modalTitle').textContent=c.title||c.type;document.getElementById('modalBody').innerHTML=`<div class="meta">رقم الشكوى: ${esc(c.id)}</div><div class="meta">المستخدم: ${esc(c.user)}</div><div class="meta">التواصل: ${esc(c.contact||'غير مضاف')}</div><div class="meta">النوع: ${esc(c.type)}</div><div class="meta">التاريخ: ${new Date(c.createdAt).toLocaleString('ar-EG')}</div><div class="desc" style="margin-top:14px">${esc(c.details)}</div><div class="actions"><button class="btn" onclick="setStatus('${esc(c.id)}','review');closeDetails()">قيد المراجعة</button><button class="btn primary" onclick="setStatus('${esc(c.id)}','done');closeDetails()">تم الحل</button></div>`;document.getElementById('detailsOverlay').classList.add('active')}
+function closeDetails(){document.getElementById('detailsOverlay').classList.remove('active')}
+function refreshUsers(){const q=(document.getElementById('searchUser')?.value||'').toLowerCase();const all=[...new Set(users.concat(complaints.map(c=>c.user).filter(Boolean)))].filter(u=>u.toLowerCase().includes(q));document.getElementById('usersList').innerHTML=all.length?all.map(u=>`<div class="user"><div class="user-main"><div class="avatar">👤</div><div><b>${esc(u)}</b><div class="small">${complaints.filter(c=>c.user===u).length} شكوى • ${vip.includes(u)?'⭐ VIP':'حساب عادي'}</div></div></div><button class="btn" onclick="toggleVip('${esc(u)}')">${vip.includes(u)?'إلغاء VIP':'ترقية VIP'}</button></div>`).join(''):'<div class="empty">لا يوجد مستخدمون.</div>'}
+function toggleVip(u){vip=vip.includes(u)?vip.filter(x=>x!==u):[...vip,u];save(KEYS.vip,vip);refreshUsers();toast(vip.includes(u)?'تمت ترقية المستخدم إلى VIP':'تم إلغاء VIP')}
+function sendBroadcast(){const text=document.getElementById('broadcastText').value.trim();if(!text)return toast('اكتب رسالة أولًا');localStorage.setItem(KEYS.broadcast,JSON.stringify({text,at:new Date().toISOString()}));document.getElementById('broadcastText').value='';renderBroadcast();toast('تم حفظ الإشعار')}
+function renderBroadcast(){const raw=localStorage.getItem(KEYS.broadcast);let x=null;try{x=raw?JSON.parse(raw):null}catch{};document.getElementById('lastBroadcast').textContent=x?`${x.text} — ${new Date(x.at).toLocaleString('ar-EG')}`:'لا يوجد إشعار.'}
+function exportData(){const data={complaints,users,vip,broadcast:localStorage.getItem(KEYS.broadcast)};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='vort-admin-backup.json';a.click();URL.revokeObjectURL(a.href);toast('تم تجهيز النسخة الاحتياطية')}
+document.getElementById('importFile').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(Array.isArray(d.complaints))save(KEYS.complaints,d.complaints.map(normalizeComplaint));if(Array.isArray(d.users))save(KEYS.users,d.users);if(Array.isArray(d.vip))save(KEYS.vip,d.vip);if(d.broadcast)localStorage.setItem(KEYS.broadcast,typeof d.broadcast==='string'?d.broadcast:JSON.stringify(d.broadcast));complaints=read(KEYS.complaints,[]);users=read(KEYS.users,[]);vip=read(KEYS.vip,[]);renderAll();toast('تم استيراد البيانات')}catch{toast('ملف JSON غير صالح')}};r.readAsText(file);e.target.value=''})
+function clearLocalDemo(){if(!confirm('مسح بيانات لوحة الإدارة المحلية؟'))return;localStorage.removeItem(KEYS.complaints);localStorage.removeItem(KEYS.users);localStorage.removeItem(KEYS.vip);localStorage.removeItem(KEYS.broadcast);complaints=[];users=['Yassin Haitham'];vip=[];renderAll();toast('تم المسح')}
+document.querySelectorAll('#nav button').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById(btn.dataset.page).classList.add('active');renderAll()}));
+['searchComplaint','statusFilter','typeFilter'].forEach(id=>document.getElementById(id).addEventListener('input',renderComplaints));document.getElementById('searchUser').addEventListener('input',refreshUsers);document.getElementById('detailsOverlay').addEventListener('click',e=>{if(e.target.id==='detailsOverlay')closeDetails()});
+renderAll();
+</script>
+</body>
+</html>
